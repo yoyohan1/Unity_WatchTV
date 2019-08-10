@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using System.Collections.Generic;
 
 public class Test : MonoBehaviour
 {
@@ -27,9 +28,25 @@ public class Test : MonoBehaviour
     bool ready = false;
 
     string snapShotpath;
-    // Use this for initialization
+
+    public VideoTV curVideoTV = VideoTV.CCTV6电影频道;
+    private Dictionary<VideoTV, string> dicSrcPath = new Dictionary<VideoTV, string>();
+
+    void InitVideoTV()
+    {
+        dicSrcPath.Add(VideoTV.河南卫视, "rtmp://58.200.131.2:1935/livetv/hntv");
+        dicSrcPath.Add(VideoTV.湖南卫视, "rtmp://58.200.131.2:1935/livetv/hunantv");
+        dicSrcPath.Add(VideoTV.CCTV6电影频道, "rtmp://58.200.131.2:1935/livetv/cctv6");
+        dicSrcPath.Add(VideoTV.CCTV9记录, "rtmp://58.200.131.2:1935/livetv/cctv9");
+        dicSrcPath.Add(VideoTV.CCTV2财经, "rtmp://58.200.131.2:1935/livetv/cctv2");
+        dicSrcPath.Add(VideoTV.CCTV13新闻, "rtmp://58.200.131.2:1935/livetv/cctv13");
+    }
+    
+
     void Start()
     {
+        InitVideoTV();
+
         Application.targetFrameRate = 30;
         Loom.Initialize();
         snapShotpath = "file:///" + Application.streamingAssetsPath;
@@ -43,10 +60,10 @@ public class Test : MonoBehaviour
         libvlc_instance_t = MediaPlayer.Create_Media_Instance();
 
         libvlc_media_player_t = MediaPlayer.Create_MediaPlayer(libvlc_instance_t);
-        //湖南卫视直播地址
-        //string videoPath = "rtmp://58.200.131.2:1935/livetv/hunantv";
-        string videoPath = "rtmp://58.200.131.2:1935/livetv/cctv6";
-    
+
+
+        string videoPath = dicSrcPath[curVideoTV]; 
+
         //本地视频地址
         //string videoPath = "file:///" + Application.streamingAssetsPath + "/test.mp4";
         bool state = MediaPlayer.SetLocation(libvlc_instance_t, libvlc_media_player_t, videoPath);
@@ -167,4 +184,15 @@ public class Test : MonoBehaviour
             Debug.Log(e.Message);
         }
     }
+}
+
+
+public enum VideoTV
+{
+    CCTV6电影频道,
+    河南卫视,
+    湖南卫视,
+    CCTV9记录,
+    CCTV2财经,
+    CCTV13新闻
 }
